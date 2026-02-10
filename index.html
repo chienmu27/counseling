@@ -4,51 +4,396 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>社團點名簿</title>
-  <style>
-    :root { --primary: #1a73e8; --success: #1e8e3e; --warning: #f29900; --danger: #d93025; --gray: #5f6368; }
-    body { font-family: sans-serif; background: #f1f3f4; padding: 10px; color: #3c4043; }
-    .card { max-width: 550px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: var(--primary); margin-top: 0; }
-    .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
-    .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; color: var(--gray); font-weight: bold; }
-    .tab.active { color: var(--primary); border-bottom: 3px solid var(--primary); }
-    .section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee; }
-    .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    button { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .btn-club { background: #e8f0fe; color: var(--primary); font-size: 16px; }
-    
-    /* 修改按鈕寬度與邊距以適應並排 */
-    .btn-submit { background: var(--success); color: white; width: 100%; font-size: 18px; }
-    .btn-leave { background: var(--warning); color: white; width: 100%; font-size: 18px; }
-    
-    .btn-danger { background: #fce8e6; color: var(--danger); width: 100%; margin-top: 10px; border: 1px solid var(--danger); }
-    .btn-outline-danger { background: white; color: var(--danger); border: 1px solid var(--danger); padding: 4px 6px; font-size: 11px; border-radius: 4px; }
-    
-    #uncheckList, #checkedList { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .student-row { display: flex; align-items: center; justify-content: space-between; padding: 8px; border: 1px solid #eee; background: white; border-radius: 6px; font-size: 14px; }
-    .student-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-    input[type="date"], input[type="password"] { width: 100%; padding: 10px; margin-top: 8px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; box-sizing: border-box; }
-    .hidden { display: none; }
-    #status { text-align: center; margin-top: 15px; padding: 10px; border-radius: 6px; font-weight: bold; min-height: 20px; }
-    .msg-success { background-color: #e6f4ea; color: var(--success); }
-    .msg-error { background-color: #fce8e6; color: var(--danger); }
-    .msg-loading { color: var(--gray); font-style: italic; }
+  <style>
+    :root{
+      --pink:#ff6fae;
+      --pink2:#ff9ac8;
+      --peach:#ffb7a7;
+      --mint:#7ee2c9;
+      --lav:#cbb6ff;
+      --sky:#a9d9ff;
+
+      --primary:#ff5fa2;
+      --success:#29b97a;
+      --warning:#ff9f3d;
+      --danger:#ff4d6d;
+      --gray:#6b6b75;
+
+      --card:#ffffffcc;
+      --card2:#ffffffef;
+      --line:#ffd2e4;
+      --shadow: 0 14px 40px rgba(255, 111, 174, 0.18);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family: "Microsoft JhengHei", system-ui, -apple-system, Segoe UI, sans-serif;
+      color:#3c4043;
+      padding: 18px 12px;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      /* 春季背景：柔和漸層 + 花朵點點 */
+      background:
+        radial-gradient(circle at 15% 18%, rgba(255, 182, 213, .55) 0 18%, transparent 19%),
+        radial-gradient(circle at 82% 22%, rgba(169, 217, 255, .55) 0 16%, transparent 17%),
+        radial-gradient(circle at 30% 80%, rgba(203, 182, 255, .55) 0 18%, transparent 19%),
+        radial-gradient(circle at 80% 82%, rgba(126, 226, 201, .50) 0 16%, transparent 17%),
+        linear-gradient(135deg, #fff0f6, #f6fbff 45%, #fff7ee);
+      overflow-x:hidden;
+    }
+
+    /* 漂浮小花點點 */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.55;
+      background-image:
+        radial-gradient(circle, rgba(255,111,174,.25) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(255,185,167,.25) 0 2px, transparent 3px),
+        radial-gradient(circle, rgba(169,217,255,.25) 0 2px, transparent 3px);
+      background-size: 120px 120px, 160px 160px, 200px 200px;
+      background-position: 0 0, 40px 60px, 90px 30px;
+      filter: blur(.2px);
+    }
+
+    .card{
+      width:min(580px, 100%);
+      margin:auto;
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 210, 228, .8);
+      padding: 22px 18px 18px;
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* 卡片上方的花瓣裝飾 */
+    .card::before{
+      content:"";
+      position:absolute;
+      top:-70px;
+      right:-70px;
+      width:180px;
+      height:180px;
+      background:
+        radial-gradient(circle at 30% 35%, rgba(255,111,174,.35), transparent 55%),
+        radial-gradient(circle at 65% 60%, rgba(203,182,255,.35), transparent 55%),
+        radial-gradient(circle at 40% 70%, rgba(169,217,255,.28), transparent 55%);
+      border-radius:50%;
+      transform: rotate(18deg);
+      pointer-events:none;
+    }
+
+    h2{
+      text-align:center;
+      margin: 2px 0 14px;
+      font-size: 26px;
+      letter-spacing: .5px;
+      color: #ff4f98;
+      text-shadow: 0 8px 18px rgba(255, 95, 162, .18);
+    }
+
+    h2::before{
+      content:"🌸";
+      margin-right: 6px;
+    }
+    h2::after{
+      content:"🌸";
+      margin-left: 6px;
+    }
+
+    p{
+      margin: 10px 0 12px;
+      color: #555;
+    }
+
+    .section{
+      background: var(--card2);
+      padding: 14px 14px;
+      border-radius: 16px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(255, 210, 228, .9);
+      box-shadow: 0 10px 20px rgba(255, 111, 174, .08);
+    }
+
+    .btn-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button{
+      padding: 12px 12px;
+      border: none;
+      border-radius: 16px;
+      cursor:pointer;
+      font-weight: 800;
+      transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      position:relative;
+      overflow:hidden;
+      user-select:none;
+    }
+
+    button:active{
+      transform: translateY(1px) scale(.99);
+    }
+
+    /* hover 飄花效果 */
+    button::after{
+      content:"🌸";
+      position:absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%) rotate(0deg);
+      opacity: 0;
+      transition: opacity .18s ease;
+      filter: drop-shadow(0 6px 10px rgba(255, 95, 162, .25));
+      pointer-events:none;
+    }
+
+    button:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 14px 30px rgba(255, 111, 174, .22);
+      filter: brightness(1.03);
+    }
+
+    button:hover::after{
+      opacity: 1;
+      animation: floatPetal 1.2s ease-in-out infinite;
+    }
+
+    @keyframes floatPetal{
+      0%{ transform: translateY(-50%) translateX(0) rotate(0deg); }
+      50%{ transform: translateY(-58%) translateX(-6px) rotate(10deg); }
+      100%{ transform: translateY(-50%) translateX(0) rotate(0deg); }
+    }
+
+    /* 社團按鈕 */
+    .btn-club{
+      background: linear-gradient(135deg, #ffe3f0, #fff7fb);
+      color: #ff4f98;
+      font-size: 16px;
+      border: 1px solid rgba(255, 95, 162, .22);
+    }
+    .btn-club::before{ content:"🌼 "; }
+
+    /* 上方返回 */
+    .btn-back{
+      background: linear-gradient(135deg, #ffffff, #fff0f6);
+      color: #ff4f98;
+      border: 1px solid rgba(255, 95, 162, .22);
+      width:100%;
+      margin-bottom: 14px;
+    }
+    .btn-back::before{ content:"🌷 "; }
+
+    /* 出席 / 請假 */
+    .btn-submit{
+      background: linear-gradient(135deg, #2bd38f, #baf7df);
+      color: #0b4a2e;
+      width:100%;
+      font-size: 18px;
+      border: 1px solid rgba(41, 185, 122, .25);
+    }
+    .btn-submit::before{ content:"🌸 "; }
+
+    .btn-leave{
+      background: linear-gradient(135deg, #ffb34a, #ffe1b2);
+      color: #5b3200;
+      width:100%;
+      font-size: 18px;
+      border: 1px solid rgba(255, 159, 61, .25);
+    }
+    .btn-leave::before{ content:"🌼 "; }
+
+    .btn-danger{
+      background: linear-gradient(135deg, #ffe3ea, #fff);
+      color: var(--danger);
+      width:100%;
+      margin-top: 10px;
+      border: 1px solid rgba(255, 77, 109, .35);
+    }
+    .btn-danger::before{ content:"🌺 "; }
+
+    .btn-outline-danger{
+      background: #fff;
+      color: var(--danger);
+      border: 1px solid rgba(255, 77, 109, .55);
+      padding: 5px 8px;
+      font-size: 11px;
+      border-radius: 10px;
+      box-shadow: 0 8px 14px rgba(255, 77, 109, .10);
+    }
+    .btn-outline-danger:hover{
+      box-shadow: 0 14px 20px rgba(255, 77, 109, .16);
+    }
+    .btn-outline-danger::before{ content:"🧺 "; }
+
+    /* Tabs */
+    .tabs{
+      display:flex;
+      gap: 10px;
+      margin: 10px 0 16px;
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(255, 210, 228, .9);
+      box-shadow: 0 10px 18px rgba(255, 111, 174, .10);
+    }
+
+    .tab{
+      flex:1;
+      padding: 12px 10px;
+      text-align:center;
+      cursor:pointer;
+      color: #7b6a73;
+      font-weight: 900;
+      border-radius: 14px;
+      transition: .18s;
+      position:relative;
+      user-select:none;
+    }
+
+    .tab::before{
+      content:"🌸";
+      position:absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%) scale(.95);
+      opacity:.55;
+      transition: .18s;
+    }
+
+    .tab.active{
+      color: #ff3f92;
+      background: linear-gradient(135deg, #fff0f6, #ffffff);
+      box-shadow: 0 12px 20px rgba(255, 95, 162, .14);
+      border: 1px solid rgba(255, 95, 162, .18);
+    }
+
+    .tab.active::before{
+      opacity: 1;
+      animation: tabBloom .9s ease-in-out infinite;
+    }
+
+    @keyframes tabBloom{
+      0%{ transform: translateY(-50%) rotate(0deg) scale(1); }
+      50%{ transform: translateY(-58%) rotate(10deg) scale(1.15); }
+      100%{ transform: translateY(-50%) rotate(0deg) scale(1); }
+    }
+
+    /* 名單兩欄保持不變 */
+    #uncheckList, #checkedList{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .student-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      padding: 10px 10px;
+      border: 1px solid rgba(255, 210, 228, .9);
+      background: rgba(255,255,255,.92);
+      border-radius: 16px;
+      font-size: 14px;
+      box-shadow: 0 10px 18px rgba(255, 111, 174, .08);
+    }
+
+    .student-row span{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-weight: 700;
+      color:#4b3b43;
+    }
+
+    input[type="date"], input[type="password"]{
+      width:100%;
+      padding: 11px 12px;
+      margin-top: 8px;
+      border: 1px solid rgba(255, 210, 228, .95);
+      border-radius: 14px;
+      font-size: 16px;
+      background: rgba(255,255,255,.85);
+      outline:none;
+      transition: .18s;
+      box-shadow: 0 10px 18px rgba(255, 111, 174, .06);
+    }
+
+    input[type="date"]:focus, input[type="password"]:focus{
+      border-color: rgba(255, 95, 162, .55);
+      box-shadow: 0 0 0 5px rgba(255, 95, 162, .12);
+    }
+
+    .hidden{ display:none; }
+
+    #status{
+      text-align:center;
+      margin-top: 14px;
+      padding: 12px 10px;
+      border-radius: 16px;
+      font-weight: 900;
+      min-height: 20px;
+      border: 1px solid transparent;
+    }
+
+    .msg-success{
+      background: rgba(43, 211, 143, .12);
+      color: #0b4a2e;
+      border-color: rgba(43, 211, 143, .25);
+    }
+
+    .msg-error{
+      background: rgba(255, 77, 109, .10);
+      color: #8a001a;
+      border-color: rgba(255, 77, 109, .25);
+    }
+
+    .msg-loading{
+      background: rgba(255, 180, 210, .14);
+      color: #6b3b55;
+      border-color: rgba(255, 180, 210, .30);
+      font-style: italic;
+    }
+
+    /* 小螢幕時保持兩欄，但更緊湊 */
+    @media (max-width: 430px){
+      .card{ padding: 18px 14px; border-radius: 20px; }
+      h2{ font-size: 22px; }
+      button{ border-radius: 14px; }
+      .student-row{ border-radius: 14px; }
+      .tab::before{ left: 10px; }
+    }
   </style>
 </head>
+
 <body>
 
 <div class="card">
   <h2>社團點名簿</h2>
 
   <div id="clubSelection">
-    <p style="text-align:center;">請選擇社團：</p>
+    <p style="text-align:center;font-weight:800;">請選擇社團：</p>
     <div id="clubBtns" class="btn-grid">讀取中...</div>
   </div>
 
   <div id="mainPage" class="hidden">
-    <button onclick="location.reload()" style="background:#eee; margin-bottom:15px; width: 100%;">← 更換社團</button>
-    <h3 id="currentClubDisp" style="text-align:center;"></h3>
+    <button onclick="location.reload()" class="btn-back">← 更換社團</button>
+    <h3 id="currentClubDisp" style="text-align:center;margin:6px 0 14px;color:#ff4f98;"></h3>
 
     <div class="tabs">
       <div id="tab1" class="tab active" onclick="switchTab('take')">點名/請假</div>
@@ -65,7 +410,7 @@
         <label><b>尚未處理學生：</b></label>
         <div id="uncheckList"></div>
       </div>
-      <!-- 修改處：將按鈕放入 btn-grid 容器中以實現並排 -->
+
       <div class="btn-grid">
         <button id="btnSubmit" class="btn-submit" onclick="submitMulti('submit')">出席點名</button>
         <button id="btnLeave" class="btn-leave" onclick="submitMulti('leave')">學生請假</button>
@@ -108,8 +453,10 @@
       const div = document.getElementById('clubBtns');
       div.innerHTML = "";
       list.forEach(c => {
-        let b = document.createElement('button'); b.className = "btn-club";
-        b.innerText = c; b.onclick = () => { curClub = c; showMain(); };
+        let b = document.createElement('button'); 
+        b.className = "btn-club";
+        b.innerText = c; 
+        b.onclick = () => { curClub = c; showMain(); };
         div.appendChild(b);
       });
     } catch(e) { showStatus("連線失敗", "error"); }
@@ -158,7 +505,7 @@
       if(type === 'checkbox') {
         d.innerHTML = `<span>${nameText}</span><input type="checkbox" name="stu" value="${nameText}" style="transform:scale(1.2);">`;
       } else {
-        const cleanName = nameText.replace('*', ''); // 刪除時使用原始姓名
+        const cleanName = nameText.replace('*', '');
         d.innerHTML = `<span>${nameText}</span><button class="btn-outline-danger" onclick="deleteSingle('${cleanName}')">刪除</button>`;
       }
       container.appendChild(d);
@@ -166,13 +513,18 @@
   }
 
   function showStatus(msg, type) {
-    const s = document.getElementById('status'); s.innerText = msg; s.className = "";
+    const s = document.getElementById('status'); 
+    s.innerText = msg; 
+    s.className = "";
     if (type === "success") s.classList.add('msg-success');
     else if (type === "error") s.classList.add('msg-error');
     else s.classList.add('msg-loading');
   }
 
-  function clearStatus() { document.getElementById('status').innerText = ""; document.getElementById('status').className = ""; }
+  function clearStatus() { 
+    document.getElementById('status').innerText = ""; 
+    document.getElementById('status').className = ""; 
+  }
 
   async function callPost(data) {
     const pwd = document.getElementById('adminPwd').value;
